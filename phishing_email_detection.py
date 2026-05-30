@@ -1,14 +1,3 @@
-"""
-Phishing Email Detection Model
-================================
-Uses the SMS Spam Collection dataset (UCI) as a proxy for phishing detection.
-The same NLP pipeline applies directly to email subject/body classification.
-
-Dataset: Automatically downloaded from UCI ML Repository
-Model: Scikit-learn (TF-IDF + Random Forest / Logistic Regression)
-Output: Accuracy score + Confusion Matrix + Feature importance
-"""
-
 import os
 import urllib.request
 import zipfile
@@ -26,10 +15,6 @@ from sklearn.metrics import (
     accuracy_score, classification_report,
     confusion_matrix, ConfusionMatrixDisplay
 )
-
-# ─────────────────────────────────────────────
-# 1. DOWNLOAD & LOAD DATASET
-# ─────────────────────────────────────────────
 
 DATASET_URL = "https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip"
 DATA_DIR = "data"
@@ -52,11 +37,6 @@ def load_data():
     df["label"] = df["label"].map({"spam": "Phishing", "ham": "Safe"})
     return df
 
-
-# ─────────────────────────────────────────────
-# 2. FEATURE ENGINEERING (URL & KEYWORD FEATURES)
-# ─────────────────────────────────────────────
-
 def extract_features(df):
     """Extract additional email-style features from text."""
     df = df.copy()
@@ -77,10 +57,6 @@ def extract_features(df):
     return df
 
 
-# ─────────────────────────────────────────────
-# 3. PREPROCESSING
-# ─────────────────────────────────────────────
-
 def preprocess_text(text):
     """Basic text cleaning."""
     text = text.lower()
@@ -89,11 +65,6 @@ def preprocess_text(text):
     text = re.sub(r"[^\w\s]", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
     return text
-
-
-# ─────────────────────────────────────────────
-# 4. BUILD & TRAIN MODELS
-# ─────────────────────────────────────────────
 
 def build_pipeline(classifier):
     """TF-IDF + classifier pipeline."""
@@ -133,11 +104,6 @@ def train_and_evaluate(X_train, X_test, y_train, y_test):
     best_name = max(results, key=results.get)
     print(f"Best Model: {best_name} ({results[best_name] * 100:.2f}% accuracy)")
     return best_name, trained_pipelines[best_name]
-
-
-# ─────────────────────────────────────────────
-# 5. VISUALISATIONS
-# ─────────────────────────────────────────────
 
 def plot_confusion_matrix(y_test, y_pred, model_name):
     """Plot and save confusion matrix."""
@@ -200,11 +166,6 @@ def plot_label_distribution(df):
     plt.savefig("label_distribution.png", dpi=150)
     plt.show()
 
-
-# ─────────────────────────────────────────────
-# 6. LIVE PREDICTION DEMO
-# ─────────────────────────────────────────────
-
 SAMPLE_EMAILS = [
     "Congratulations! You have won a $1,000 gift card. Click http://win-now.com to claim your prize immediately!",
     "Hey, are we still on for lunch tomorrow? Let me know!",
@@ -225,10 +186,6 @@ def run_predictions(pipeline):
         print(f"  Prediction : {prediction}")
         print(f"  Confidence : {phishing_conf:.1f}% phishing probability")
 
-
-# ─────────────────────────────────────────────
-# 7. MAIN
-# ─────────────────────────────────────────────
 
 def main():
     download_dataset()
